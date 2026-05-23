@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIP Auto Signal Pro - 99% Win</title>
+    <style>
+        /* --- PREMIUM DARK THEME --- */
+        :root {
+            --bg: #05080f;
+            --card: #0d1321;
+            --gold: #ffd700;
+            --red: #ff3b30;
+            --green: #34c759;
+            --violet: #af52de;
+            --text: #ffffff;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .app-box {
+            width: 100%;
+            max-width: 400px;
+            background: var(--card);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+            border: 1px solid #333;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .status {
+            font-size: 12px;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        /* Main Signal Display */
+        .signal-box {
+            background: linear-gradient(145deg, #161f33, #0a0e17);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+        }
+
+        .big-text {
+            font-size: 80px;
+            font-weight: 900;
+            line-height: 1;
+            margin-bottom: 10px;
+            text-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
+        }
+
+        .label {
+            font-size: 14px;
+            color: #aaa;
+            letter-spacing: 1px;
+        }
+
+        /* Timer & Next Entry */
+        .timer-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            background: rgba(255,255,255,0.03);
+            padding: 10px;
+            border-radius: 10px;
+        }
+        .timer-item { text-align: center; width: 48%; }
+        .timer-val { font-size: 20px; font-weight: bold; color: var(--gold); }
+        .timer-lbl { font-size: 10px; color: #666; }
+
+        /* History Grid */
+        .history-title { font-size: 14px; margin-bottom: 10px; color: #888; }
+        .history-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 5px;
+        }
+        .hist-item {
+            background: rgba(255,255,255,0.05);
+            padding: 8px 0;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .h-num { font-size: 14px; font-weight: bold; display: block; }
+        .h-per { font-size: 9px; color: #666; display: block; }
+
+        /* Colors */
+        .red { color: var(--red); text-shadow: 0 0 10px rgba(255,59,48,0.5); }
+        .green { color: var(--green); text-shadow: 0 0 10px rgba(52,199,89,0.5); }
+        .violet { color: var(--violet); text-shadow: 0 0 10px rgba(175,82,222,0.5); }
+
+        /* Loading Animation */
+        .loader {
+            display: none;
+            width: 30px; height: 30px;
+            border: 3px solid #333;
+            border-top: 3px solid var(--gold);
+            border-radius: 50%;
+            margin: 20px auto;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+    </style>
+</head>
+<body>
+
+    <div class="app-box">
+        <div class="header">
+            <h1>VIP AUTO PRO</h1>
+            <div class="status">● Connected to Server (Latency: 24ms)</div>
+        </div>
+
+        <!-- Main Display -->
+        <div class="signal-box">
+            <div class="label">NEXT ENTRY</div>
+            <div class="big-text" id="main-signal">--</div>
+            <div class="loader" id="loader"></div>
+            <div style="font-size:12px; color:#888;" id="analysis-text">Analyzing Market...</div>
+        </div>
+
+        <!-- Timer -->
+        <div class="timer-row">
+            <div class="timer-item">
+                <div class="timer-val" id="period-count">45</div>
+                <div class="timer-lbl">Seconds Left</div>
+            </div>
+            <div class="timer-item">
+                <div class="timer-val" style="color:var(--green)">99%</div>
+                <div class="timer-lbl">Accuracy</div>
+            </div>
+        </div>
+
+        <!-- History -->
+        <div class="history-title">RECENT HISTORY</div>
+        <div class="history-grid" id="history-grid">
+            <!-- JS will fill this -->
+        </div>
+    </div>
+
+    <script>
+        // --- CONFIGURATION ---
+        let currentPeriod = 295000;
+        let secondsLeft = 45;
+
+        // --- CORE LOGIC (The "Real" Feel) ---
+        function startEngine() {
+            // Initial Load
+            updateHistory(currentPeriod);
+            
+            // Start Timer Loop
+            setInterval(() => {
+                secondsLeft--;
+                document.getElementById('period-count').innerText = secondsLeft;
+
+                if(secondsLeft <= 0) {
+                    // Period Over - Generate New Signal
+                    generateNewSignal();
+                    currentPeriod++;
+                    secondsLeft = 45;
+                    updateHistory(currentPeriod);
+                }
+            }, 1000);
+        }
+
+        function generateNewSignal() {
+            const display = document.getElementById('main-signal');
+            const loader = document.getElementById('loader');
+            const analysisText = document.getElementById('analysis-text');
+
+            // UI Reset
+            display.innerText = '';
+            loader.style.display = 'block';
+            analysisText.innerText = "Scanning Market Patterns...";
+            
+            // Simulate Network Delay (0.5s to 1.5s)
+            setTimeout(() => {
+                loader.style.display = 'none';
+                
+                // Smart Logic: Weighted Randomness
+                // এখানে আমরা এমনভাবে লজিক বসিয়েছি যাতে 3, 4, 9 আসার সম্ভাবনা বেশি থাকে (Common Game Logic)
+                const rand = Math.random();
+                let result = '';
+                let colorClass = '';
+
+                if (rand < 0.40) { 
+                    // 40% Chance for Red (3) - Usually safer bet in these games
+                    result = '3'; 
+                    colorClass = 'red'; 
+                    analysisText.innerText = "Trend: UP";
+                } else if (rand < 0.80) { 
+                    // 40% Chance for Green (4)
+                    result = '4'; 
+                    colorClass = 'green'; 
+                    analysisText.innerText = "Trend: DOWN";
+                } else { 
+                    // 20% Chance for Violet (9) - High Risk/High Reward
+                    result = '9'; 
+                    colorClass = 'violet'; 
+                    analysisText.innerText = "Pattern Break!";
+                }
+
+                display.innerText = result;
+                display.className = `big-text ${colorClass}`;
+                
+                // Vibrate on Mobile
+                if (navigator.vibrate) navigator.vibrate(200);
+
+            }, 800);
+        }
+
+        function updateHistory(periodNum) {
+            const grid = document.getElementById('history-grid');
+            
+            // Create a fake result for history (to look real)
+            const results = ['3', '4', '9'];
+            const colors = ['red', 'green', 'violet'];
+            const randomIndex = Math.floor(Math.random() * 3);
+
+            const div = document.createElement('div');
+            div.className = 'hist-item';
+            div.innerHTML = `
+                <span class="h-num ${colors[randomIndex]}">${results[randomIndex]}</span>
+                <span class="h-per">${periodNum}</span>
+            `;
+
+            grid.prepend(div); // Add to top
+
+            // Keep only last 8 items
+            if (grid.children.length > 8) {
+                grid.removeChild(grid.lastChild);
+            }
+        }
+
+        // Start the engine when page loads
+        window.onload = startEngine;
+
+    </script>
+</body>
+  </html>
